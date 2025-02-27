@@ -5,12 +5,14 @@ import { Home } from "./pages/Home/Home";
 import { Profile } from "./pages/Profile/Profile";
 import { Create } from "./pages/Create/Create";
 import { GlobalStyles } from "./styles/GlobalStyles";
+import LoginPage from "./pages/Login/Login";
 
 function App() {
   return (
     <Router>
       <GlobalStyles />
       <Routes>
+        <Route path="login" element={<LoginPage />} />
         <Route path="/" element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="profile" element={<Profile />} />
