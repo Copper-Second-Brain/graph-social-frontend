@@ -1,135 +1,24 @@
 // src/components/Layout/Layout.tsx
-import React from "react";
-import {
-  Outlet,
-  NavLink as RouterNavLink,
-  useNavigate,
-} from "react-router-dom";
-import {
-  LayoutContainer,
-  MainContent,
-  Sidebar,
-  NavLink,
-} from "./Layout.styles";
-import {
-  AiFillHome,
-  AiOutlineUser,
-  AiOutlinePlus,
-  AiOutlineLogout,
-  AiOutlineGlobal,
-} from "react-icons/ai";
+import React, { useState } from "react";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../contexts/AuthContext";
-import styled from "styled-components";
-
-const Header = styled.header`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border-radius: 12px;
-  margin-bottom: 2rem;
-  box-shadow: 0 5px 15px rgba(106, 61, 232, 0.1);
-`;
-
-const HeaderTitle = styled.h2`
-  color: #6a3de8;
-  margin: 0;
-  font-size: 1.5rem;
-`;
-
-const UserInfo = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-`;
-
-const UserAvatar = styled.div`
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #6a3de8 0%, #9c6dff 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-weight: 600;
-  font-size: 1rem;
-`;
-
-const UserName = styled.span`
-  font-weight: 500;
-  color: #2d2146;
-`;
-
-const LogoutButton = styled.button`
-  background: none;
-  border: none;
-  color: #6a3de8;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  cursor: pointer;
-  padding: 0.5rem;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-
-  &:hover {
-    background: rgba(106, 61, 232, 0.1);
-  }
-`;
-
-const Logo = styled.div`
-  padding: 1rem;
-  margin-bottom: 2rem;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: #6a3de8;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-`;
-
-const NavItem = styled(RouterNavLink)`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem 1rem;
-  color: #4a2b9e;
-  border-radius: 8px;
-  margin-bottom: 0.5rem;
-  transition: all 0.2s ease;
-  font-weight: 500;
-
-  &:hover {
-    background: rgba(106, 61, 232, 0.1);
-  }
-
-  &.active {
-    background: linear-gradient(
-      90deg,
-      rgba(106, 61, 232, 0.2) 0%,
-      rgba(156, 109, 255, 0.2) 100%
-    );
-    color: #6a3de8;
-    font-weight: 600;
-  }
-
-  svg {
-    font-size: 1.25rem;
-  }
-`;
-
-const NavFooter = styled.div`
-  margin-top: auto;
-  padding: 1rem;
-`;
+import {
+  Home,
+  User,
+  PlusCircle,
+  LogOut,
+  Globe,
+  Menu,
+  X,
+  ChevronRight,
+  Search,
+} from "lucide-react";
 
 export const Layout: React.FC = () => {
   const { currentUser, logout } = useAuth();
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const handleLogout = () => {
     logout();
@@ -139,60 +28,197 @@ export const Layout: React.FC = () => {
   // Get first letter of username for avatar
   const userInitial = currentUser?.username.charAt(0).toUpperCase() || "U";
 
+  const closeSidebar = () => {
+    setSidebarOpen(false);
+  };
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Implement search functionality
+    console.log("Searching for:", searchQuery);
+    setSearchQuery("");
+  };
+
   return (
-    <LayoutContainer>
-      <Sidebar>
-        <Logo>
-          <AiOutlineGlobal />
-          Knowledge Graph
-        </Logo>
+    <div className="flex min-h-screen">
+      {/* Sidebar - fixed on large screens, sliding on mobile */}
+      <aside
+        className={`fixed inset-y-0 left-0 z-40 w-64 glass-card-dark border-r border-white/10 transition-transform duration-300 ease-in-out transform ${
+          sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
+        }`}
+      >
+        {/* Close button - only on mobile */}
+        <button
+          className="absolute top-4 right-4 p-1 text-white/70 hover:text-white lg:hidden"
+          onClick={closeSidebar}
+        >
+          <X size={20} />
+        </button>
 
-        <nav>
-          <NavItem
+        {/* Logo */}
+        <div className="flex items-center gap-3 px-6 py-6 mb-2">
+          <Globe className="text-secondary-600" size={24} />
+          <span className="text-xl font-bold gradient-text">
+            Knowledge Graph
+          </span>
+        </div>
+
+        {/* Navigation */}
+        <nav className="px-3 py-4">
+          <NavLink
             to="/home"
-            className={({ isActive }) => (isActive ? "active" : "")}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 mb-2 rounded-lg transition-all duration-200 group ${
+                isActive
+                  ? "bg-secondary-900/50 text-white font-medium"
+                  : "text-white/70 hover:bg-dark-800/60 hover:text-white"
+              }`
+            }
+            onClick={closeSidebar}
           >
-            <AiFillHome />
-            Home
-          </NavItem>
+            <Home size={18} />
+            <span>Home</span>
+            <ChevronRight
+              size={16}
+              className={`ml-auto opacity-0 group-hover:opacity-100 transition-opacity ${
+                location.pathname === "/home" ? "opacity-100" : ""
+              }`}
+            />
+          </NavLink>
 
-          <NavItem
+          <NavLink
             to="/profile"
-            className={({ isActive }) => (isActive ? "active" : "")}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 mb-2 rounded-lg transition-all duration-200 group ${
+                isActive
+                  ? "bg-secondary-900/50 text-white font-medium"
+                  : "text-white/70 hover:bg-dark-800/60 hover:text-white"
+              }`
+            }
+            onClick={closeSidebar}
           >
-            <AiOutlineUser />
-            Profile
-          </NavItem>
+            <User size={18} />
+            <span>Profile</span>
+            <ChevronRight
+              size={16}
+              className={`ml-auto opacity-0 group-hover:opacity-100 transition-opacity ${
+                location.pathname === "/profile" ? "opacity-100" : ""
+              }`}
+            />
+          </NavLink>
 
-          <NavItem
+          <NavLink
             to="/create"
-            className={({ isActive }) => (isActive ? "active" : "")}
+            className={({ isActive }) =>
+              `flex items-center gap-3 px-4 py-3 mb-2 rounded-lg transition-all duration-200 group ${
+                isActive
+                  ? "bg-secondary-900/50 text-white font-medium"
+                  : "text-white/70 hover:bg-dark-800/60 hover:text-white"
+              }`
+            }
+            onClick={closeSidebar}
           >
-            <AiOutlinePlus />
-            Create
-          </NavItem>
+            <PlusCircle size={18} />
+            <span>Create</span>
+            <ChevronRight
+              size={16}
+              className={`ml-auto opacity-0 group-hover:opacity-100 transition-opacity ${
+                location.pathname === "/create" ? "opacity-100" : ""
+              }`}
+            />
+          </NavLink>
         </nav>
 
-        <NavFooter>
-          <LogoutButton onClick={handleLogout}>
-            <AiOutlineLogout />
-            Logout
-          </LogoutButton>
-        </NavFooter>
-      </Sidebar>
+        {/* User section at bottom */}
+        <div className="absolute bottom-0 left-0 right-0 px-3 py-4">
+          <div className="glass-card-dark flex items-center gap-3 p-3 mb-4">
+            <div className="w-10 h-10 bg-gradient-to-br from-secondary-600 to-primary-700 rounded-full flex items-center justify-center text-white font-medium">
+              {userInitial}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-white truncate">
+                {currentUser?.username}
+              </p>
+              <p className="text-xs text-white/50 truncate">
+                {currentUser?.email}
+              </p>
+            </div>
+          </div>
 
-      <MainContent>
-        <Header>
-          <HeaderTitle>Knowledge Graph Social</HeaderTitle>
+          <button
+            onClick={handleLogout}
+            className="flex w-full items-center gap-3 px-4 py-3 rounded-lg text-white/70 hover:bg-dark-800/60 hover:text-white transition-all duration-200"
+          >
+            <LogOut size={18} />
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
 
-          <UserInfo>
-            <UserName>{currentUser?.username}</UserName>
-            <UserAvatar>{userInitial}</UserAvatar>
-          </UserInfo>
-        </Header>
+      {/* Main content */}
+      <main className="flex-1 lg:ml-64">
+        {/* Header */}
+        <header className="sticky top-0 z-30 glass-card-dark border-b border-white/10 px-4 py-4 shadow-md backdrop-blur-md">
+          <div className="flex items-center justify-between">
+            {/* Mobile menu toggle */}
+            <button
+              className="p-2 rounded-lg text-white/70 hover:bg-dark-800/60 hover:text-white lg:hidden"
+              onClick={toggleSidebar}
+            >
+              <Menu size={24} />
+            </button>
 
-        <Outlet />
-      </MainContent>
-    </LayoutContainer>
+            {/* Search bar */}
+            <form
+              className="hidden md:flex flex-1 max-w-md mx-6"
+              onSubmit={handleSearch}
+            >
+              <div className="relative w-full">
+                <Search
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="Search knowledge graph..."
+                  className="w-full bg-dark-800/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-secondary-600/30"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </div>
+            </form>
+
+            {/* Title - shown on mobile */}
+            <h1 className="text-lg font-bold gradient-text md:hidden">
+              Knowledge Graph
+            </h1>
+
+            {/* User avatar - optional on larger screens */}
+            <div className="flex items-center gap-3 ml-auto lg:ml-0">
+              <div className="w-8 h-8 bg-gradient-to-br from-secondary-600 to-primary-700 rounded-full flex items-center justify-center text-white font-medium md:hidden">
+                {userInitial}
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Content */}
+        <div className="p-4 sm:p-6 md:p-8">
+          <Outlet />
+        </div>
+      </main>
+
+      {/* Mobile sidebar backdrop */}
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 bg-dark-950/80 z-30 lg:hidden"
+          onClick={closeSidebar}
+        ></div>
+      )}
+    </div>
   );
 };

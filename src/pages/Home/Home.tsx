@@ -1,204 +1,24 @@
 // src/pages/Home/Home.tsx
 import React, { useEffect, useState } from "react";
 import { apiService, Document } from "../../services/api";
-import styled from "styled-components";
 import { Link } from "react-router-dom";
 import {
-  AiOutlineUser,
-  AiOutlineLink,
-  AiOutlineCalendar,
-  AiOutlineSearch,
-} from "react-icons/ai";
-
-const PageContainer = styled.div`
-  max-width: 900px;
-  margin: 0 auto;
-`;
-
-const PageHeader = styled.div`
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-`;
-
-const SearchContainer = styled.div`
-  position: relative;
-  flex: 1;
-  max-width: 400px;
-`;
-
-const SearchInput = styled.input`
-  width: 100%;
-  padding: 0.75rem 1rem 0.75rem 2.5rem;
-  background: rgba(255, 255, 255, 0.5);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-
-  &:focus {
-    outline: none;
-    border-color: var(--primary-color);
-    box-shadow: 0 0 0 2px rgba(106, 61, 232, 0.2);
-  }
-`;
-
-const SearchIcon = styled.div`
-  position: absolute;
-  left: 0.75rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #6d6a7c;
-  font-size: 1.25rem;
-`;
-
-const DocumentsGrid = styled.div`
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 1.5rem;
-`;
-
-const DocumentCard = styled.div`
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(var(--blur-amount));
-  -webkit-backdrop-filter: blur(var(--blur-amount));
-  border-radius: 16px;
-  padding: 1.5rem;
-  box-shadow: 0 8px 30px rgba(106, 61, 232, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.4);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
-  &:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(106, 61, 232, 0.15);
-  }
-`;
-
-const DocumentTitle = styled.h2`
-  font-size: 1.25rem;
-  margin-bottom: 0.75rem;
-  color: #4a2b9e;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-`;
-
-const DocumentContent = styled.p`
-  color: #6d6a7c;
-  margin-bottom: 1rem;
-  flex: 1;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-  font-size: 0.9rem;
-  line-height: 1.5;
-`;
-
-const DocumentMeta = styled.div`
-  display: flex;
-  align-items: center;
-  margin-top: auto;
-  color: #6d6a7c;
-  font-size: 0.8rem;
-  gap: 1rem;
-`;
-
-const MetaItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-`;
-
-const Tag = styled.span`
-  display: inline-block;
-  background: rgba(106, 61, 232, 0.1);
-  color: #6a3de8;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  margin-right: 0.5rem;
-  margin-bottom: 0.5rem;
-`;
-
-const TagsContainer = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
-`;
-
-const LoadingContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 3rem;
-  color: #6a3de8;
-  font-size: 1.25rem;
-  font-weight: 500;
-`;
-
-const ErrorContainer = styled.div`
-  background: rgba(255, 0, 0, 0.1);
-  color: #d00;
-  padding: 1.5rem;
-  border-radius: 8px;
-  text-align: center;
-  margin: 2rem 0;
-  border: 1px solid rgba(255, 0, 0, 0.2);
-`;
-
-const EmptyStateContainer = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  background: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(var(--blur-amount));
-  border-radius: 16px;
-  box-shadow: 0 8px 30px rgba(106, 61, 232, 0.1);
-  text-align: center;
-`;
-
-const EmptyStateTitle = styled.h3`
-  margin: 1rem 0;
-  color: #4a2b9e;
-`;
-
-const CreateButton = styled(Link)`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  background: linear-gradient(90deg, #6a3de8 0%, #9c6dff 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  text-decoration: none;
-
-  &:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(106, 61, 232, 0.2);
-  }
-`;
+  User,
+  Link as LinkIcon,
+  Calendar,
+  Search,
+  PlusCircle,
+  BookOpen,
+  Bookmark,
+  ChevronRight,
+  Filter,
+  X,
+  Clock,
+} from "lucide-react";
 
 // Function to extract tags from content
 const extractTags = (content: string): string[] => {
-  // For this demo, we'll extract simple words as tags
   const words = content.split(/\s+/).filter((word) => word.length > 5);
-  // Get unique words and limit to 3
   return [...new Set(words)].slice(0, 3);
 };
 
@@ -208,6 +28,13 @@ export const Home: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState<string>("");
+  const [bookmarked, setBookmarked] = useState<Record<string, boolean>>({});
+  const [filterOpen, setFilterOpen] = useState(false);
+  const [filterByAuthor, setFilterByAuthor] = useState<string | null>(null);
+  const [visibleDocuments, setVisibleDocuments] = useState<string[]>([]);
+
+  // Get unique authors for filtering
+  const authors = [...new Set(documents.map((doc) => doc.author_id))];
 
   useEffect(() => {
     const fetchDocuments = async () => {
@@ -215,6 +42,13 @@ export const Home: React.FC = () => {
         const docs = await apiService.getDocuments();
         setDocuments(docs);
         setFilteredDocuments(docs);
+
+        // Initialize all documents as not bookmarked
+        const bookmarkState: Record<string, boolean> = {};
+        docs.forEach((doc) => {
+          bookmarkState[doc.id] = false;
+        });
+        setBookmarked(bookmarkState);
       } catch (err) {
         console.error("Error loading documents:", err);
         setError("Failed to load documents.");
@@ -226,94 +60,311 @@ export const Home: React.FC = () => {
     fetchDocuments();
   }, []);
 
+  // Filter documents based on search term and author filter
   useEffect(() => {
+    let filtered = documents;
+
     if (searchTerm) {
-      const filtered = documents.filter(
+      filtered = filtered.filter(
         (doc) =>
           doc.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
           doc.content.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      setFilteredDocuments(filtered);
-    } else {
-      setFilteredDocuments(documents);
     }
-  }, [searchTerm, documents]);
+
+    if (filterByAuthor) {
+      filtered = filtered.filter((doc) => doc.author_id === filterByAuthor);
+    }
+
+    setFilteredDocuments(filtered);
+  }, [searchTerm, documents, filterByAuthor]);
+
+  // Intersection Observer for document cards (lazy loading animation)
+  useEffect(() => {
+    if (!loading) {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              setVisibleDocuments((prev) => [...prev, entry.target.id]);
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.1 }
+      );
+
+      // Observe all document cards
+      document.querySelectorAll(".document-card").forEach((card) => {
+        observer.observe(card);
+      });
+
+      return () => observer.disconnect();
+    }
+  }, [filteredDocuments, loading]);
+
+  const toggleBookmark = (docId: string) => {
+    setBookmarked((prev) => ({
+      ...prev,
+      [docId]: !prev[docId],
+    }));
+  };
+
+  const clearFilters = () => {
+    setFilterByAuthor(null);
+    setSearchTerm("");
+  };
 
   if (loading) {
-    return <LoadingContainer>Loading documents...</LoadingContainer>;
+    return (
+      <div className="flex flex-col items-center justify-center py-12">
+        <div className="w-16 h-16 border-4 border-secondary-600/20 border-t-secondary-600 rounded-full animate-spin"></div>
+        <p className="mt-4 text-white/70">Loading knowledge graph...</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <ErrorContainer>{error}</ErrorContainer>;
+    return (
+      <div className="glass-card-dark p-6 text-center max-w-md mx-auto my-8 text-white">
+        <div className="text-red-500 text-4xl mb-4">⚠️</div>
+        <h2 className="text-xl mb-4 text-white/90">Error</h2>
+        <p className="mb-6 text-white/70">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="btn-primary"
+        >
+          Try Again
+        </button>
+      </div>
+    );
   }
 
-  if (filteredDocuments.length === 0 && !searchTerm) {
+  if (filteredDocuments.length === 0 && !searchTerm && !filterByAuthor) {
     return (
-      <EmptyStateContainer>
-        <AiOutlineLink size={48} color="#6a3de8" />
-        <EmptyStateTitle>No documents found</EmptyStateTitle>
-        <p>Get started by creating your first document</p>
-        <CreateButton to="/create">Create Document</CreateButton>
-      </EmptyStateContainer>
+      <div className="glass-card-dark p-8 text-center max-w-md mx-auto my-12 flex flex-col items-center">
+        <BookOpen size={48} className="text-secondary-500 mb-4" />
+        <h2 className="text-xl font-semibold mb-3 text-white">
+          No documents yet
+        </h2>
+        <p className="mb-8 text-white/70">
+          Get started by creating your first document
+        </p>
+        <Link
+          to="/create"
+          className="btn-primary flex items-center gap-2 group"
+        >
+          <PlusCircle size={18} />
+          <span>Create Document</span>
+          <ChevronRight
+            size={16}
+            className="group-hover:translate-x-1 transition-transform"
+          />
+        </Link>
+      </div>
     );
   }
 
   return (
-    <PageContainer>
-      <PageHeader>
-        <h1>Knowledge Feed</h1>
-        <SearchContainer>
-          <SearchIcon>
-            <AiOutlineSearch />
-          </SearchIcon>
-          <SearchInput
-            type="text"
-            placeholder="Search documents..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </SearchContainer>
-      </PageHeader>
+    <div className="max-w-[1200px] mx-auto animate-fade-in">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <h1 className="text-2xl md:text-3xl font-bold text-white">
+          Knowledge Feed
+        </h1>
 
-      {filteredDocuments.length === 0 && searchTerm ? (
-        <EmptyStateContainer>
-          <AiOutlineSearch size={48} color="#6a3de8" />
-          <EmptyStateTitle>No results found</EmptyStateTitle>
-          <p>Try different keywords or browse all documents</p>
-          <button onClick={() => setSearchTerm("")} className="button">
-            Clear Search
+        <div className="flex items-center gap-3 w-full sm:w-auto">
+          <div className="relative flex-1 sm:max-w-md">
+            <Search
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50"
+              size={18}
+            />
+            <input
+              type="text"
+              placeholder="Search documents..."
+              className="w-full bg-dark-800/50 border border-white/10 rounded-lg pl-10 pr-4 py-2 text-white placeholder:text-white/50 focus:outline-none focus:ring-2 focus:ring-secondary-600/30"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            {searchTerm && (
+              <button
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-white/50 hover:text-white"
+                onClick={() => setSearchTerm("")}
+              >
+                <X size={16} />
+              </button>
+            )}
+          </div>
+
+          <button
+            className={`p-2.5 rounded-lg ${
+              filterOpen || filterByAuthor
+                ? "bg-secondary-700 text-white"
+                : "bg-dark-800/50 text-white/70 hover:text-white hover:bg-dark-700/70"
+            } transition-colors relative`}
+            onClick={() => setFilterOpen(!filterOpen)}
+          >
+            <Filter size={18} />
+            {filterByAuthor && (
+              <span className="absolute top-0 right-0 w-2.5 h-2.5 bg-secondary-500 rounded-full"></span>
+            )}
           </button>
-        </EmptyStateContainer>
-      ) : (
-        <DocumentsGrid>
-          {filteredDocuments.map((doc) => (
-            <DocumentCard key={doc.id}>
-              <DocumentTitle>{doc.title}</DocumentTitle>
+        </div>
+      </div>
 
-              <TagsContainer>
-                {extractTags(doc.content).map((tag, index) => (
-                  <Tag key={index}>{tag}</Tag>
-                ))}
-              </TagsContainer>
+      {/* Filter dropdown */}
+      {filterOpen && (
+        <div className="glass-card-dark p-4 mb-6 animate-slide-up">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-white/90 font-medium">Filter Documents</h3>
+            <button
+              className="text-white/70 hover:text-white"
+              onClick={() => setFilterOpen(false)}
+            >
+              <X size={18} />
+            </button>
+          </div>
 
-              <DocumentContent>{doc.content}</DocumentContent>
+          <div className="mb-4">
+            <label className="block text-white/70 text-sm mb-2">Author</label>
+            <div className="flex flex-wrap gap-2">
+              {authors.map((author) => (
+                <button
+                  key={author}
+                  className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                    filterByAuthor === author
+                      ? "bg-secondary-700 text-white"
+                      : "bg-dark-800/70 text-white/70 hover:bg-dark-700/70 hover:text-white"
+                  }`}
+                  onClick={() =>
+                    setFilterByAuthor(author === filterByAuthor ? null : author)
+                  }
+                >
+                  {author}
+                </button>
+              ))}
+            </div>
+          </div>
 
-              <DocumentMeta>
-                <MetaItem>
-                  <AiOutlineUser />
-                  {doc.author_id}
-                </MetaItem>
-
-                <MetaItem>
-                  <AiOutlineLink />
-                  {doc.linkedDocuments?.length || 0} links
-                </MetaItem>
-              </DocumentMeta>
-            </DocumentCard>
-          ))}
-        </DocumentsGrid>
+          {filterByAuthor && (
+            <button
+              className="text-secondary-400 hover:text-secondary-300 text-sm flex items-center gap-1"
+              onClick={clearFilters}
+            >
+              <X size={14} />
+              Clear all filters
+            </button>
+          )}
+        </div>
       )}
-    </PageContainer>
+
+      {filteredDocuments.length === 0 ? (
+        <div className="glass-card-dark p-8 text-center max-w-md mx-auto my-8">
+          <Search size={36} className="text-secondary-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-3 text-white">
+            No matches found
+          </h2>
+          <p className="mb-6 text-white/70">
+            Try different search terms or filter settings
+          </p>
+          <button onClick={clearFilters} className="btn-primary">
+            Clear Filters
+          </button>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredDocuments.map((doc) => {
+            const isVisible = visibleDocuments.includes(doc.id);
+            const tags = extractTags(doc.content);
+
+            return (
+              <div
+                id={doc.id}
+                key={doc.id}
+                className={`document-card glass-card-dark overflow-hidden group transition-all duration-300 ${
+                  isVisible
+                    ? "opacity-100 translate-y-0"
+                    : "opacity-0 translate-y-4"
+                }`}
+              >
+                <div className="p-6">
+                  <div className="flex justify-between items-start mb-3">
+                    <Link
+                      to={`/document/${doc.id}`}
+                      className="text-xl font-medium text-white hover:text-secondary-400 transition-colors line-clamp-2"
+                    >
+                      {doc.title}
+                    </Link>
+
+                    <button
+                      className="p-1.5 rounded-full hover:bg-dark-800/70 transition-colors"
+                      onClick={() => toggleBookmark(doc.id)}
+                    >
+                      <Bookmark
+                        size={18}
+                        className={
+                          bookmarked[doc.id]
+                            ? "text-secondary-500 fill-secondary-500"
+                            : "text-white/50"
+                        }
+                      />
+                    </button>
+                  </div>
+
+                  {/* Tags */}
+                  <div className="flex flex-wrap gap-2 mb-4">
+                    {tags.map((tag, index) => (
+                      <span
+                        key={index}
+                        className="px-2 py-1 rounded-full text-xs font-medium bg-dark-800/70 text-white/70"
+                      >
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+
+                  {/* Content preview */}
+                  <p className="text-white/70 text-sm line-clamp-3 mb-5">
+                    {doc.content}
+                  </p>
+
+                  {/* Metadata */}
+                  <div className="flex items-center justify-between text-xs text-white/50">
+                    <div className="flex items-center gap-1">
+                      <User size={14} />
+                      <span>{doc.author_id}</span>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <LinkIcon size={14} />
+                      <span>{doc.linkedDocuments?.length || 0} links</span>
+                    </div>
+
+                    <div className="flex items-center gap-1">
+                      <Clock size={14} />
+                      <span>5 min read</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card footer with link to full document */}
+                <Link
+                  to={`/document/${doc.id}`}
+                  className="block p-3 bg-dark-800/50 hover:bg-dark-700/70 transition-colors text-sm text-white/70 text-center group-hover:text-white"
+                >
+                  <span className="flex items-center justify-center gap-1.5">
+                    Read Document
+                    <ChevronRight
+                      size={16}
+                      className="group-hover:translate-x-0.5 transition-transform"
+                    />
+                  </span>
+                </Link>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
   );
 };
 
