@@ -19,7 +19,7 @@ const ProfileContainer = styled.div`
 
 const ProfileHeader = styled.div`
   margin-bottom: 2rem;
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(37, 31, 41, 0.1);
   backdrop-filter: blur(var(--blur-amount));
   -webkit-backdrop-filter: blur(var(--blur-amount));
   border-radius: 16px;
@@ -104,7 +104,7 @@ const RecommendationsGrid = styled.div`
 `;
 
 const RecommendationCard = styled.div`
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(37, 31, 41, 0.1);
   backdrop-filter: blur(var(--blur-amount));
   -webkit-backdrop-filter: blur(var(--blur-amount));
   border-radius: 16px;
@@ -260,17 +260,17 @@ export const Profile: React.FC = () => {
       // Mock recommendation data
       setRecommendations([
         {
-          user_id: "user3",
+          user_id: "huyenchip",
           similarity_score: 0.89,
           shared_topics: ["Machine Learning", "AI", "LSTM"],
         },
         {
-          user_id: "user4",
+          user_id: "karpathy",
           similarity_score: 0.76,
           shared_topics: ["AI", "LLM", "NLP"],
         },
         {
-          user_id: "user2",
+          user_id: "kostya_numan",
           similarity_score: 0.68,
           shared_topics: ["Data Visualization", "Data Science"],
         },
@@ -337,7 +337,7 @@ export const Profile: React.FC = () => {
             <RecommendationCard key={rec.user_id}>
               <UserAvatar>{rec.user_id.charAt(0).toUpperCase()}</UserAvatar>
               <UserInfo>
-                <h3 style={{ color: "#4a2b9e" }}>User: {rec.user_id}</h3>
+                <h3 style={{ color: "#9c6dff" }}>@{rec.user_id}</h3>
                 <div
                   style={{
                     fontSize: "0.875rem",
@@ -354,7 +354,7 @@ export const Profile: React.FC = () => {
                 style={{
                   fontSize: "0.875rem",
                   fontWeight: 500,
-                  color: "#4a2b9e",
+                  color: "#9c6dff",
                 }}
               >
                 Shared Topics:

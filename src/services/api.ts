@@ -44,6 +44,9 @@ class ApiService {
 
   async getUserGraph(userId: string): Promise<GraphData> {
     const response = await axios.get(`${API_BASE_URL}/users/${userId}/graph`);
+    console.log("Fetching garph data");
+    console.log(response.data);
+    console.log("Fetched Succesfully");
     return response.data;
   }
   // New function to load documents from the backend.

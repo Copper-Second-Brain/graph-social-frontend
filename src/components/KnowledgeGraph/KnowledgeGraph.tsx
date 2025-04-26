@@ -2,6 +2,7 @@
 import React, { useCallback, useRef, useState, useEffect } from "react";
 import ForceGraph2D from "react-force-graph-2d";
 import { GraphData } from "../../services/api";
+import { useNavigate } from "react-router-dom";
 import {
   ZoomIn,
   ZoomOut,
@@ -26,8 +27,13 @@ export const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({
   height = 600,
   interactive = true,
 }) => {
+  const navigate = useNavigate();
   const [tooltipVisible, setTooltipVisible] = useState(false);
-  const [tooltipContent, setTooltipContent] = useState({ title: "", type: "" });
+  const [tooltipContent, setTooltipContent] = useState({
+    title: "",
+    type: "",
+    description: "",
+  });
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const [isLoading, setIsLoading] = useState(true);
   const [infoOpen, setInfoOpen] = useState(false);
@@ -71,15 +77,20 @@ export const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({
       if (!interactive) return;
 
       // Center view on node
-      const distance = 40;
+      const distance = 80;
       const distRatio = 1 + distance / Math.hypot(node.x, node.y);
 
       if (graphRef.current) {
         graphRef.current.centerAt(node.x, node.y, 1000);
         graphRef.current.zoom(2, 1000);
       }
+
+      // Navigate to the Read page if the node is a document
+      if (node.type === "document") {
+        navigate(`/document/${node.id}`);
+      }
     },
-    [interactive]
+    [interactive, navigate]
   );
 
   const handleNodeHover = useCallback(
@@ -88,8 +99,10 @@ export const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({
 
       if (node) {
         setTooltipContent({
-          title: node.name || node.id,
+          // Use title for documents, or id as fallback
+          title: node.type === "document" ? node.title || node.id : node.id,
           type: node.type || "Unknown",
+          description: getNodeDescription(node),
         });
         setTooltipPosition({ x: position.x, y: position.y });
         setTooltipVisible(true);
@@ -99,6 +112,26 @@ export const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({
     },
     [interactive]
   );
+
+  // Generate a short description based on node type and data
+  const getNodeDescription = (node: any) => {
+    if (!node) return "";
+
+    switch (node.type) {
+      case "document":
+        return node.content
+          ? `${node.content.substring(0, 100)}${
+              node.content.length > 100 ? "..." : ""
+            }`
+          : "A document in your knowledge graph";
+      case "user":
+        return "User in the knowledge network";
+      case "tag":
+        return "Content category or topic";
+      default:
+        return "Connected node in your knowledge graph";
+    }
+  };
 
   const handleZoomIn = () => {
     if (graphRef.current) {
@@ -141,7 +174,8 @@ export const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({
     ctx: CanvasRenderingContext2D,
     globalScale: number
   ) => {
-    const label = node.name || node.id;
+    // Use title for documents, or id as fallback for all nodes
+    const label = node.type === "document" ? node.title || node.id : node.id;
     const fontSize = 12 / globalScale;
     ctx.font = `${fontSize}px Inter, sans-serif`;
 
@@ -243,22 +277,32 @@ export const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({
         />
       </div>
 
-      {/* Custom tooltip */}
+      {/* Enhanced tooltip with description */}
       {tooltipVisible && (
         <div
-          className="absolute bg-dark-900/90 backdrop-blur-md border border-white/10 px-3 py-2 rounded-lg text-white text-sm pointer-events-none z-10 shadow-xl transform -translate-x-1/2 -translate-y-full animate-fade-in"
+          className="absolute bg-dark-900/90 backdrop-blur-md border border-white/10 px-3 py-2 rounded-lg text-white text-sm pointer-events-none z-10 shadow-xl transform -translate-x-1/2 -translate-y-full animate-fade-in max-w-xs"
           style={{
             left: tooltipPosition.x,
             top: tooltipPosition.y - 10,
           }}
         >
           <div className="font-medium mb-1">{tooltipContent.title}</div>
-          <div className="flex items-center gap-1.5 text-xs text-white/70">
+          <div className="flex items-center gap-1.5 text-xs text-white/70 mb-2">
             {tooltipContent.type === "user" && <User size={12} />}
             {tooltipContent.type === "document" && <FileText size={12} />}
             {tooltipContent.type === "tag" && <Tag size={12} />}
             <span>{tooltipContent.type}</span>
           </div>
+          {tooltipContent.description && (
+            <div className="text-xs text-white/80 border-t border-white/10 pt-2 mt-1 line-clamp-3">
+              {tooltipContent.description}
+            </div>
+          )}
+          {tooltipContent.type === "document" && (
+            <div className="text-xs text-secondary-400 mt-1 font-medium">
+              Click to open
+            </div>
+          )}
         </div>
       )}
 
@@ -301,7 +345,7 @@ export const KnowledgeGraph: React.FC<KnowledgeGraphProps> = ({
               <div className="text-white/60 text-xs">
                 <div className="flex items-center gap-1 mb-1">
                   <Command size={10} />
-                  <span>Click on a node to focus</span>
+                  <span>Click on a document to open it</span>
                 </div>
                 <div className="flex items-center gap-1">
                   <Command size={10} />
